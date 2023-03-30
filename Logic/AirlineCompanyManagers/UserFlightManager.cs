@@ -16,5 +16,9 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
             var createdUserFlight=await _repository.Create(userFlight);
             return createdUserFlight;
         }
+        public bool IsUserflightExist(int userId, int flightId)
+        {
+            return _repository.isUserAssignedToFlight(userId, flightId);
+        }
     }
 }

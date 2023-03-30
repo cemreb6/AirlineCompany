@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AirlineCompany.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     [ApiVersion("1.0")]
     public class FlightController : ControllerBase

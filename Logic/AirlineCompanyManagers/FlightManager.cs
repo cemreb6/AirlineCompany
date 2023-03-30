@@ -18,29 +18,40 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
 
         public async Task<LogicResponseDTO<List<Flight>>> GetFlights(QueryTicketModal modal)
         {
-           var flights =await _flightRepository.GetFlights(modal);
-            return new LogicResponseDTO<List<Flight>> { Data = flights, Success = flights.Count > 0, Message = "" };
+            var flights = await _flightRepository.GetFlights(modal);
+            return new LogicResponseDTO<List<Flight>> { Data = flights, Success = flights.Count > 0, Message = 
+                flight.Count>0 ?
+                "There are matching flights with the filters."
+                :
+                "There are no mathing flights."};
         }
 
-        public async Task<LogicResponseDTO<string>> BuyTicket(BuyTicketModal modal,string token)
+        public async Task<LogicResponseDTO<string>> BuyTicket(BuyTicketModal modal, string token)
         {
             var flight = _flightRepository.GetFlightFromFlightNo(modal.flightNo);
             var user = _userManager.GetUserFromToken(token);
-            if(flight !=null && user != null)
+            if (flight != null && user != null)
             {
-                var createdUserFlight = await _userFlightManager.BuyTicket(new UserFlight { Flight_id=flight.Id,User_id=user.Id,PassengerFullName=modal.fullName});
-                if(createdUserFlight !=null && createdUserFlight.Id > 0)
+                if (_userFlightManager.IsUserflightExist(user.Id, flight.Id))
                 {
-                    var flightResponse=await _flightRepository.UpdateFlightPassengers(flight.Id);
-                    if(flightResponse !=null && flightResponse.AvailableSeats< flight.AvailableSeats)
-                    {
-                        return new LogicResponseDTO<string> { Data = null, Message = "User assigned to flight successfully.", Success = true };
-                    }
-                    return new LogicResponseDTO<string> { Data = null, Message = "Available seat count update failed!", Success = false };
+                    return new LogicResponseDTO<string> { Data = null, Message = "User is already in the flight!", Success = false };
                 }
                 else
                 {
-                    return new LogicResponseDTO<string> { Data = null, Message = "User cannot be assigned to flight.", Success = false };
+                    var createdUserFlight = await _userFlightManager.BuyTicket(new UserFlight { Flight_id = flight.Id, User_id = user.Id, PassengerFullName = modal.fullName });
+                    if (createdUserFlight != null && createdUserFlight.Id > 0)
+                    {
+                        var flightResponse = await _flightRepository.UpdateFlightPassengers(flight.Id);
+                        if (flightResponse != null && flightResponse.AvailableSeats < flight.AvailableSeats)
+                        {
+                            return new LogicResponseDTO<string> { Data = null, Message = "User assigned to flight successfully.", Success = true };
+                        }
+                        return new LogicResponseDTO<string> { Data = null, Message = "Available seat count update failed!", Success = false };
+                    }
+                    else
+                    {
+                        return new LogicResponseDTO<string> { Data = null, Message = "User cannot be assigned to flight.", Success = false };
+                    }
                 }
             }
             else if (flight == null)

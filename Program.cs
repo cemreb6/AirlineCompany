@@ -51,9 +51,10 @@ builder.Services.AddApiVersioning(_ =>
     _.AssumeDefaultVersionWhenUnspecified = true;
     _.ReportApiVersions = true;
     _.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
         new QueryStringApiVersionReader("api-version"),
         new HeaderApiVersionReader("X-Version"),
-        new MediaTypeApiVersionReader("ver"));
+        new MediaTypeApiVersionReader("X-Version"));
 });
 
 var app = builder.Build();

@@ -4,9 +4,9 @@ using AirlineCompany.Logic.Abstarct;
 
 namespace AirlineCompany.Controllers
 {
-    [Route("api/[controller]/[action]")]
-    [ApiController]
     [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
+    [ApiController]
     public class UserController : ControllerBase
     {
         private IUserManager _userManager;
