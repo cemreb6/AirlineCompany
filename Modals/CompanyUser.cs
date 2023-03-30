@@ -22,7 +22,5 @@ namespace AirlineCompany.Modals
         public string Surname { get; set; }
         [Column("token")]
         public string token { get; set; }
-        [Column("role")]
-        public string role { get; set; } = "client";
     }
 }
