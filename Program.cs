@@ -1,9 +1,15 @@
+using AirlineCompany.Data.Abstract;
+using AirlineCompany.Data.EntityFramework;
+using AirlineCompany.Logic.Abstarct;
+using AirlineCompany.Logic.AirlineCompanyManagers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -23,12 +29,26 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
         };
     });
+
+builder.Services.AddScoped<IUserManager, UserManager>();
+builder.Services.AddScoped<IUserFlightManager, UserFlightManager>();
+builder.Services.AddScoped<IFlightManager, FlightManager>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserFlightRepository, UserFlightRepository>();
+builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddApiVersioning(_ =>
+{
+    _.DefaultApiVersion = new ApiVersion(1, 0);
+    _.AssumeDefaultVersionWhenUnspecified = true;
+});
 
 var app = builder.Build();
 

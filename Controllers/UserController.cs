@@ -3,6 +3,7 @@ using AirlineCompany.Services;
 using AirlineCompany.Data.EntityFramework;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AirlineCompany.Logic.Abstarct;
 
 namespace AirlineCompany.Controllers
 {
@@ -10,14 +11,16 @@ namespace AirlineCompany.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult SignUp([FromBody] SignUpModal modal)
+        private IUserManager _userManager;
+        public UserController(IUserManager userManager)
         {
-            Repository<CompanyUser> userRepository = new Repository<CompanyUser>();
-            var passwordSalt = PasswordHasherService.GenerateSalt();
-            var passwordHash = PasswordHasherService.GenerateHash(modal.Password, passwordSalt);
-            userRepository.Create(new CompanyUser {Email=modal.Email,Name=modal.Name,Surname=modal.Surname,token="",PasswordHash=passwordHash,PasswordSalt=passwordSalt });
-            return Ok();
+            _userManager= userManager;  
+        }
+        [HttpPost]
+        public async Task<IActionResult> SignUp([FromBody] SignUpModal modal)
+        {
+          var user=await _userManager.SignUp(modal);
+            return Ok(user);
         }
     }
 }
