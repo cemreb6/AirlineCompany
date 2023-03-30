@@ -1,5 +1,6 @@
 ﻿using AirlineCompany.Logic.Abstarct;
 using AirlineCompany.Modals;
+using AirlineCompany.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,17 +17,20 @@ namespace AirlineCompany.Controllers
         {
             _flightManager= flightManager;
         }
-        [HttpPost,Authorize]
-        public IActionResult BuyTicket([FromBody] BuyTicketModal modal)
-        {
-            return Ok();
-        }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetTickets([FromQuery]QueryTicketModal modal)
         {
             var resp = await _flightManager.GetFlights(modal);
             return Ok(resp);
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> BuyTicket([FromBody] BuyTicketModal modal)
+        {
+            var response = await _flightManager.BuyTicket(modal, TokenService.GetToken(Request));
+            return Ok(response);
         }
     }
 }

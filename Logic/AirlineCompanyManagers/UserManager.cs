@@ -94,5 +94,9 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
             return token;
         }
 
+        public CompanyUser? GetUserFromToken(string token)
+        {
+            return _userRepository.GetUserByToken(token);
+        }
     }
 }

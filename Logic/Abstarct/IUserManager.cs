@@ -6,5 +6,7 @@ namespace AirlineCompany.Logic.Abstarct
     {
         public Task<LogicResponseDTO<CompanyUser>> SignUp(SignUpModal modal);
         public LogicResponseDTO<CompanyUser> SignIn(SignInModal modal);
+
+        public CompanyUser? GetUserFromToken(string token);
     }
 }

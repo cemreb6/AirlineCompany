@@ -2,7 +2,7 @@
 
 namespace AirlineCompany.Data.Abstract
 {
-    public interface IUserFlightRepository
+    public interface IUserFlightRepository : IRepository<UserFlight>
     {
     }
 }

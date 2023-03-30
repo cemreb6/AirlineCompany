@@ -1,18 +1,17 @@
 ﻿using AirlineCompany.Data.Abstract;
 using AirlineCompany.Modals;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace AirlineCompany.Data.EntityFramework
 {
     public class UserRepository : Repository<CompanyUser>, IUserRepository
     {
-        public CompanyUser? GetUserByUsername(string email)
+        public CompanyUser? GetUserByUsername(string username)
         {
            using(var context=new DataContext())
             {
                 try
                 {
-                    var user=context.Users.Single(u=>u.Username== email);
+                    var user=context.Users.Single(u=>u.Username== username);
                     return user;
                 }catch(Exception)
                 {
@@ -20,29 +19,19 @@ namespace AirlineCompany.Data.EntityFramework
                 }
             }
         }
-        public void AddToken(JwtSecurityToken token, int id)
-        {
-            using (var context = new DataContext())
-            {
-                var user = context.Users.Single(u => u.Id == id);
-                user.token = new JwtSecurityTokenHandler().WriteToken(token);
-                context.Update(user);
-                context.SaveChanges();
-            }
-        }
-        public bool CheckToken(string token, int id)
+
+        public CompanyUser? GetUserByToken(string token)
         {
             using (var context = new DataContext())
             {
                 try
                 {
-                    var user = context.Users.Single(u => u.Id == id && u.token == token);
-                    return user != null;
+                    var user = context.Users.Single(u => u.token == token);
+                    return user;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine(e.Message);
-                    return false;
+                    return null;
                 }
             }
         }
