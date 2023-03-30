@@ -35,12 +35,16 @@ namespace AirlineCompany.Data.EntityFramework
                 context.SaveChanges();
             }
         }
-        public void Create(T e)
+   
+
+        public async Task<T> Create(T e)
         {
             using (var context = new DataContext())
             {
                 context.Set<T>().Add(e);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
+                return e;
+
             }
         }
     }
