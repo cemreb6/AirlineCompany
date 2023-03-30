@@ -23,7 +23,7 @@ namespace AirlineCompany.Modals
         public string FlightNo { get; set; }
 
         [Column("price")]
-        public Double Price { get; set; }
+        public Single Price { get; set; }
 
         [Column("seat_count")]
         public int SeatCount { get; set; }

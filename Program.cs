@@ -4,6 +4,7 @@ using AirlineCompany.Logic.Abstarct;
 using AirlineCompany.Logic.AirlineCompanyManagers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -48,6 +49,11 @@ builder.Services.AddApiVersioning(_ =>
 {
     _.DefaultApiVersion = new ApiVersion(1, 0);
     _.AssumeDefaultVersionWhenUnspecified = true;
+    _.ReportApiVersions = true;
+    _.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("X-Version"),
+        new MediaTypeApiVersionReader("ver"));
 });
 
 var app = builder.Build();

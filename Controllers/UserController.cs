@@ -6,6 +6,7 @@ namespace AirlineCompany.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private IUserManager _userManager;
