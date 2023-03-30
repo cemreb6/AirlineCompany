@@ -20,14 +20,14 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
         }
         public async Task<LogicResponseDTO<CompanyUser>> SignUp(SignUpModal modal)
         {
-            var user = _userRepository.GetUserByEmail(modal.Email);
+            var user = _userRepository.GetUserByUsername(modal.Username);
             if (user == null)
             {
                 var passwordSalt = PasswordHasherService.GenerateSalt();
                 var passwordHash = PasswordHasherService.GenerateHash(modal.Password, passwordSalt);
                 var newuser = new CompanyUser
                 {
-                    Email = modal.Email,
+                    Username = modal.Username, 
                     Name = modal.Name,
                     Surname = modal.Surname,
                     PasswordHash = passwordHash,
@@ -36,8 +36,8 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
                 newuser = CreateToken(newuser);
 
                 var createdUser = await _userRepository.Create(newuser);
-                createdUser.PasswordHash = new byte[1];
-                createdUser.PasswordSalt = new byte[1];
+                createdUser.PasswordHash = new byte[0];
+                createdUser.PasswordSalt = new byte[0];
                 if (createdUser != null)
                     return new LogicResponseDTO<CompanyUser> { Data = createdUser, Success = createdUser != null, Message = "Sign Up opearation completed successfully." };
             }
@@ -47,10 +47,9 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
             }
             return new LogicResponseDTO<CompanyUser> { Data = null, Success = false, Message = "Unexpected error occured." };
         }
-
         public LogicResponseDTO<CompanyUser> SignIn(SignInModal modal)
         {
-            var user = _userRepository.GetUserByEmail(modal.Email);
+            var user = _userRepository.GetUserByUsername(modal.Username);
             if (user != null)
             {
                 var isPasswordValid = PasswordHasherService.VerifyPassword(modal.Password, user.PasswordSalt, user.PasswordHash);
@@ -74,7 +73,7 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
         {
             var authClaims = new List<Claim>
                 {
-                    new(ClaimTypes.Email, user.Email),
+                    new(ClaimTypes.Email, user.Username),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
             var token = GetToken(authClaims);

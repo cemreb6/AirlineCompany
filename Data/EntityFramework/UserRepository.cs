@@ -6,13 +6,13 @@ namespace AirlineCompany.Data.EntityFramework
 {
     public class UserRepository : Repository<CompanyUser>, IUserRepository
     {
-        public CompanyUser? GetUserByEmail(string email)
+        public CompanyUser? GetUserByUsername(string email)
         {
            using(var context=new DataContext())
             {
                 try
                 {
-                    var user=context.Users.Single(u=>u.Email== email);
+                    var user=context.Users.Single(u=>u.Username== email);
                     return user;
                 }catch(Exception)
                 {
