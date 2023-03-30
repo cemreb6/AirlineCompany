@@ -20,7 +20,7 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
         {
             var flights = await _flightRepository.GetFlights(modal);
             return new LogicResponseDTO<List<Flight>> { Data = flights, Success = flights.Count > 0, Message = 
-                flight.Count>0 ?
+                flights.Count>0 ?
                 "There are matching flights with the filters."
                 :
                 "There are no mathing flights."};
