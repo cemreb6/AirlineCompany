@@ -1,7 +1,4 @@
 ﻿using AirlineCompany.Modals;
-using AirlineCompany.Services;
-using AirlineCompany.Data.EntityFramework;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AirlineCompany.Logic.Abstarct;
 
@@ -20,6 +17,13 @@ namespace AirlineCompany.Controllers
         public async Task<IActionResult> SignUp([FromBody] SignUpModal modal)
         {
           var user=await _userManager.SignUp(modal);
+            return Ok(user);
+        }
+
+        [HttpPost]
+        public IActionResult SignIn([FromBody] SignInModal modal)
+        {
+            var user =  _userManager.SignIn(modal);
             return Ok(user);
         }
     }

@@ -18,7 +18,6 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
             _userRepository = userRepository;
             _configuration = configuration;
         }
-
         public async Task<LogicResponseDTO<CompanyUser>> SignUp(SignUpModal modal)
         {
             var user = _userRepository.GetUserByEmail(modal.Email);
@@ -36,17 +35,40 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
                 };
                 newuser = CreateToken(newuser);
 
-                var createdUser=await _userRepository.Create(newuser);
-                if(createdUser !=null)
-                       return new LogicResponseDTO<CompanyUser> { Data= createdUser ,Success= createdUser !=null,Message="Sign Up opearation completed successfully."};
+                var createdUser = await _userRepository.Create(newuser);
+                createdUser.PasswordHash = new byte[1];
+                createdUser.PasswordSalt = new byte[1];
+                if (createdUser != null)
+                    return new LogicResponseDTO<CompanyUser> { Data = createdUser, Success = createdUser != null, Message = "Sign Up opearation completed successfully." };
             }
             else
             {
                 return new LogicResponseDTO<CompanyUser> { Data = null, Success = false, Message = "The email exist.Please sign in." };
             }
             return new LogicResponseDTO<CompanyUser> { Data = null, Success = false, Message = "Unexpected error occured." };
+        }
 
-
+        public LogicResponseDTO<CompanyUser> SignIn(SignInModal modal)
+        {
+            var user = _userRepository.GetUserByEmail(modal.Email);
+            if (user != null)
+            {
+                var isPasswordValid = PasswordHasherService.VerifyPassword(modal.Password, user.PasswordSalt, user.PasswordHash);
+                user.PasswordHash = new byte[0];
+                user.PasswordSalt = new byte[0];
+                return new LogicResponseDTO<CompanyUser>
+                {
+                    Data = isPasswordValid ? user : null,
+                    Success = isPasswordValid,
+                    Message = isPasswordValid ? "Sign in operation completed successfully."
+                    :
+                    "Sign in operation failed!"
+                };
+            }
+            else
+            {
+                return new LogicResponseDTO<CompanyUser> { Data = null, Success = false, Message = "There is no such user!" };
+            }
         }
         private CompanyUser CreateToken(CompanyUser user)
         {
@@ -72,5 +94,6 @@ namespace AirlineCompany.Logic.AirlineCompanyManagers
 
             return token;
         }
+
     }
 }
